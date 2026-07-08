@@ -149,8 +149,11 @@ the sources:
                             to represent the unresolved flux from sources at very small
                             fluxes will be turned off.
       --drop_brightest DROP_BRIGHTEST
-                            This many brightest sources will be dropped from the point
-                            sources.
+                            If an integer, this many brightest sources will be
+                            dropped from the point sources distribution. If a
+                            float, this number is the percent of total flux
+                            thatwill be dropped from the point sources
+                            distribution. Default: None (no sources dropped).
       --random_seed RANDOM_SEED
                             A constant integer random seed to produce a consistent set of
                             random numbers.
@@ -209,6 +212,12 @@ Drop the 50 brightest point sources:
 
     [~]$ make_point_sources pt_src.simput pt_src 75.0,ks 5.0 90.0,-10.0 --drop_brightest=50 --overwrite
 
+Drop 30% of the total flux from the point sources:
+
+.. code-block:: bash
+
+    [~]$ make_point_sources pt_src.simput pt_src 75.0,ks 5.0 90.0,-10.0 --drop_brightest=0.3 --overwrite
+
 .. _cmd-make-point-source-list:
 
 ``make_point_source_list``
@@ -232,8 +241,11 @@ Drop the 50 brightest point sources:
       -h, --help            show this help message and exit
       --overwrite           Overwrite an existing file with the same name.
       --drop_brightest DROP_BRIGHTEST
-                            This many brightest sources will be dropped from the point
-                            sources.
+                            If an integer, this many brightest sources will be
+                            dropped from the point sources distribution. If a
+                            float, this number is the percent of total flux
+                            thatwill be dropped from the point sources
+                            distribution. Default: None (no sources dropped).
       --random_seed RANDOM_SEED
                             A constant integer random seed to produce a consistent set of
                             random numbers.
@@ -253,3 +265,9 @@ Drop the 50 brightest point sources:
 .. code-block:: bash
 
     [~]$ make_point_source_list my_ptsrc_list.dat 30.0 90.0,-10.0 --drop_brightest=50 --overwrite
+
+Drop 30% of the total flux from the point sources:
+
+.. code-block:: bash
+
+    [~]$ make_point_source_list my_ptsrc_list.dat 30.0 90.0,-10.0 --drop_brightest=0.3 --overwrite

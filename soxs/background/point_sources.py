@@ -22,6 +22,24 @@ cc = 0.5
 dd = 1.8
 
 
+def _drop_brightest(drop_brightest, ra0, dec0, fluxes, ind):
+    if drop_brightest < 1.0:
+        if drop_brightest <= 0.0:
+            raise ValueError("drop_brightest must be >= 0.0, if a fraction!")
+        cum_fluxes = np.cumsum(fluxes)
+        cum_fluxes /= cum_fluxes[-1]
+        idx = np.searchsorted(cum_fluxes, drop_brightest) - 1
+        drop_brightest = np.sum(fluxes > fluxes[idx])
+    if drop_brightest > 0:
+        mylog.info("Excising %d brightest sources.", drop_brightest)
+        idx = np.argsort(fluxes)[drop_brightest:]
+        ra0 = ra0[idx]
+        dec0 = dec0[idx]
+        fluxes = fluxes[idx]
+        ind = ind[idx]
+    return ra0, dec0, fluxes, ind
+
+
 # Here x = log10(flux)
 def get_agn_index(x):
     y = (x - aa) / bb
@@ -166,11 +184,13 @@ def make_ptsrc_background(
     diffuse_unresolved : boolean, optional
         Add a diffuse component across the entire field of view to represent
         the unresolved flux from sources at very small fluxes. Default: True
-    drop_brightest : integer, optional
+    drop_brightest : integer or float, optional
         If set to an integer, drop the brightest *drop_brightest* sources
-        from the list. This is a poor-person's way of mimicking the
-        by-hand removal of point sources via wavdetect or some other
-        technique. Default: None
+        from the list. If set to a float, it must be between 0.0 and 1.0, and
+        it is interpreted as the fraction of the total flux that you want dropped
+        in terms of point sources that will determine the number. This is a
+        poor-person's way of mimicking the by-hand removal of point sources via
+        wavdetect or some other technique. Default: None
     prng : :class:`~numpy.random.RandomState` object, integer, or None
         A pseudo-random number generator. Typically will only
         be specified if you have a reason to generate the same
@@ -197,13 +217,8 @@ def make_ptsrc_background(
         fluxes = t["flux_0.5_2.0_keV"].data
         ind = t["index"].data
 
-    if drop_brightest is not None and drop_brightest > 0:
-        mylog.info("Excising %d brightest sources.", drop_brightest)
-        idx = np.argsort(fluxes)[drop_brightest:]
-        ra0 = ra0[idx]
-        dec0 = dec0[idx]
-        fluxes = fluxes[idx]
-        ind = ind[idx]
+    if drop_brightest is not None:
+        ra0, dec0, fluxes, ind = _drop_brightest(drop_brightest, ra0, dec0, fluxes, ind)
 
     num_sources = fluxes.size
 
@@ -389,11 +404,13 @@ def make_point_sources_file(
     diffuse_unresolved : boolean, optional
         Add a diffuse component across the entire field of view to represent
         the unresolved flux from sources at very small fluxes. Default: True
-    drop_brightest : integer, optional
+    drop_brightest : integer or float, optional
         If set to an integer, drop the brightest *drop_brightest* sources
-        from the list. This is a poor-person's way of mimicking the
-        by-hand removal of point sources via wavdetect or some other
-        technique. Default: None
+        from the list. If set to a float, it must be between 0.0 and 1.0, and
+        it is interpreted as the fraction of the total flux that you want dropped
+        in terms of point sources that will determine the number. This is a
+        poor-person's way of mimicking the by-hand removal of point sources via
+        wavdetect or some other technique. Default: None
     prng : :class:`~numpy.random.RandomState` object, integer, or None
         A pseudo-random number generator. Typically will only
         be specified if you have a reason to generate the same
@@ -442,11 +459,13 @@ def make_point_source_list(
         The field of view in arcminutes.
     sky_center : array-like
         The center RA, Dec of the field of view in degrees.
-    drop_brightest : integer, optional
+    drop_brightest : integer or float, optional
         If set to an integer, drop the brightest *drop_brightest* sources
-        from the list. This is a poor-person's way of mimicking the
-        by-hand removal of point sources via wavdetect or some other
-        technique. Default: None
+        from the list. If set to a float, it must be between 0.0 and 1.0, and
+        it is interpreted as the fraction of the total flux that you want dropped
+        in terms of point sources that will determine the number. This is a
+        poor-person's way of mimicking the by-hand removal of point sources via
+        wavdetect or some other technique. Default: None
     overwrite : boolean, optional
         Set to True to overwrite previous files. Default: False
     prng : :class:`~numpy.random.RandomState` object, integer, or None
@@ -457,13 +476,8 @@ def make_point_source_list(
     """
     ra0, dec0, fluxes, ind = generate_sources(fov, sky_center, prng=prng)
 
-    if drop_brightest is not None and drop_brightest > 0:
-        mylog.info("Excising %d brightest sources.", drop_brightest)
-        idx = np.argsort(fluxes)[drop_brightest:]
-        ra0 = ra0[idx]
-        dec0 = dec0[idx]
-        fluxes = fluxes[idx]
-        ind = ind[idx]
+    if drop_brightest is not None:
+        ra0, dec0, fluxes, ind = _drop_brightest(drop_brightest, ra0, dec0, fluxes, ind)
 
     t = Table([ra0, dec0, fluxes, ind], names=("RA", "Dec", "flux_0.5_2.0_keV", "index"))
     t["RA"].unit = "deg"

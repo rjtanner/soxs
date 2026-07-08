@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import argparse
+from numbers import Number
 
 import numpy as np
 
 from soxs.background import make_point_sources_file
 
 parser = argparse.ArgumentParser(
-    description="Create a SIMPUT photon list catalog of a " "point-source background."
+    description="Create a SIMPUT photon list catalog of a point-source background."
 )
 parser.add_argument(
     "filename",
@@ -15,16 +16,13 @@ parser.add_argument(
     help="The filename of the SIMPUT catalog to be used as the root of the "
     + "catalog. If it does not exist, it will be created.",
 )
-parser.add_argument(
-    "name", type=str, help="The name of the source in the SIMPUT catalog."
-)
+parser.add_argument("name", type=str, help="The name of the source in the SIMPUT catalog.")
 parser.add_argument("exp_time", help="The exposure time to use, in seconds.")
 parser.add_argument("fov", help="The field of view on a side in arcminutes.")
 parser.add_argument(
     "sky_center",
     type=str,
-    help="The center RA, Dec coordinates of the "
-    + "observation, in degrees, comma-separated.",
+    help="The center RA, Dec coordinates of the " + "observation, in degrees, comma-separated.",
 )
 parser.add_argument(
     "--absorb_model",
@@ -47,8 +45,7 @@ parser.add_argument(
 parser.add_argument(
     "--src_filename",
     type=str,
-    help="An optional filename to store the source instead of the SIMPUT "
-    "catalog file.",
+    help="An optional filename to store the source instead of the SIMPUT catalog file.",
 )
 parser.add_argument(
     "--append",
@@ -74,12 +71,14 @@ parser.add_argument(
     "--no_diffuse_unresolved",
     action="store_true",
     help="If set, the diffuse component across the entire field of view to represent "
-         "the unresolved flux from sources at very small fluxes will be turned off.",
+    "the unresolved flux from sources at very small fluxes will be turned off.",
 )
 parser.add_argument(
     "--drop_brightest",
-    type=int,
-    help="This many brightest sources will be dropped from the point sources.",
+    help="If an integer, this many brightest sources will be dropped from the point "
+    "sources distribution. If a float, this number is the percent of total flux that"
+    "will be dropped from the point sources distribution. Default: None "
+    "(no sources dropped).",
 )
 parser.add_argument(
     "--random_seed",
@@ -90,6 +89,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 sky_center = np.array(args.sky_center.split(",")).astype("float64")
+
+if args.drop_brightest is not None and not isinstance(args.drop_brightest, Number):
+    raise TypeError("drop_brightest must be an integer or a float.")
 
 make_point_sources_file(
     args.filename,

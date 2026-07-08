@@ -46,8 +46,11 @@ etc.
                             to represent the unresolved flux from sources at very small
                             fluxes will be turned off.
       --drop_brightest DROP_BRIGHTEST
-                            This many brightest sources will be dropped from the point
-                            sources.
+                            If an integer, this many brightest sources will be
+                            dropped from the point sources distribution. If a
+                            float, this number is the percent of total flux
+                            thatwill be dropped from the point sources
+                            distribution. Default: None (no sources dropped).
       --subpixel_res        Don't uniformly distribute event positions within pixels.
       --no_dither           Turn dithering off entirely.
       --dither_params DITHER_PARAMS
@@ -153,3 +156,9 @@ Drop the 50 brightest point sources:
 .. code-block:: bash
 
     [~]$ make_background_file bkg_evt.fits 50.0,ks hdxi 30.,45. --drop_brightest=50 --overwrite
+
+Drop 20% of the total flux from the point sources:
+
+.. code-block:: bash
+
+    [~]$ make_background_file bkg_evt.fits 50.0,ks hdxi 30.,45. --drop_brightest=0.2 --overwrite

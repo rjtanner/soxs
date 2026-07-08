@@ -3,6 +3,13 @@
 ChangeLog
 =========
 
+Version 5.4.0
+-------------
+
+* The ``drop_brightest`` functionality for dropping bright point sources now optionally
+  also accepts a float between 0.0 and 1.0, which will drop the this fraction of total
+  flux from the CXB in terms of the number of sources dropped.
+
 Version 5.3.0
 -------------
 

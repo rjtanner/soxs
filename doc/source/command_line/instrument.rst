@@ -66,8 +66,11 @@ processed by standard tools such as CIAO, HEATOOLS, XSPEC, etc.
                             to represent the unresolved flux from sources at very small
                             fluxes will be turned off.
       --drop_brightest DROP_BRIGHTEST
-                            This many brightest sources will be dropped from the point
-                            sources.
+                            If an integer, this many brightest sources will be
+                            dropped from the point sources distribution. If a
+                            float, this number is the percent of total flux
+                            thatwill be dropped from the point sources
+                            distribution. Default: None (no sources dropped).
       --random_seed RANDOM_SEED
                             A constant integer random seed to produce a consistent set of
                             random numbers.
@@ -173,6 +176,12 @@ Drop the 50 brightest point sources:
 .. code-block:: bash
 
     [~]$ instrument_simulator sloshing_simput.fits evt.fits 50.0,ks hdxi 30.,45. --drop_brightest=50 --overwrite
+
+Drop 20% of the total flux from the point sources:
+
+.. code-block:: bash
+
+    [~]$ instrument_simulator sloshing_simput.fits evt.fits 50.0,ks hdxi 30.,45. --drop_brightest=0.2 --overwrite
 
 To use a background stored in an event file:
 

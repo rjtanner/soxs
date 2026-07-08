@@ -220,9 +220,9 @@ run. You can also pass this file to the ``input_pt_sources`` keyword argument of
 
 Both of the functions :func:`~soxs.background.point_sources.make_point_sources_file`
 and :func:`~soxs.background.point_sources.make_point_source_list` also take the
-``drop_brightest`` option, which if set to an integer will drop the specified
-number of brightest sources from the list (this is a poor-person's version of
-removing point sources from observations):
+``drop_brightest`` option, which is a poor-person's version of removing point sources
+from observations. If set to an integer will drop the specified number of brightest
+sources from the list:
 
 .. code-block:: python
 
@@ -235,3 +235,12 @@ removing point sources from observations):
     # drop the 50 brightest sources
     soxs.make_point_sources_file(filename, name, exp_time, fov,
                                  sky_center, drop_brightest=50)
+
+If set to a float, it will drop the number of sources corresponding to this fraction
+of the total CXB flux:
+
+.. code-block:: python
+
+    # drop 20% of the total CXB flux
+    soxs.make_point_sources_file(filename, name, exp_time, fov,
+                                 sky_center, drop_brightest=0.2)

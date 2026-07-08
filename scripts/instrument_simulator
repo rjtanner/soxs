@@ -2,6 +2,7 @@
 
 import argparse
 import os
+from numbers import Number
 
 import numpy as np
 
@@ -14,13 +15,9 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "simput_file",
     type=str,
-    help="The SIMPUT file to be used as input, or "
-    '"None" if you only want to simulate '
-    "backgrounds.",
+    help='The SIMPUT file to be used as input, or "None" if you only want to simulate backgrounds.',
 )
-parser.add_argument(
-    "out_file", type=str, help="The name of the event file to be written."
-)
+parser.add_argument("out_file", type=str, help="The name of the event file to be written.")
 parser.add_argument("exp_time", help="The exposure time to use, in seconds.")
 parser.add_argument(
     "instrument",
@@ -32,17 +29,14 @@ parser.add_argument(
 parser.add_argument(
     "sky_center",
     type=str,
-    help="The center RA, Dec coordinates of the "
-    + "observation, in degrees, comma-separated",
+    help="The center RA, Dec coordinates of the " + "observation, in degrees, comma-separated",
 )
 parser.add_argument(
     "--overwrite",
     action="store_true",
     help="Overwrite an existing file with the same name.",
 )
-parser.add_argument(
-    "--roll_angle", default=0.0, help="The roll angle in degrees. Default: 0.0"
-)
+parser.add_argument("--roll_angle", default=0.0, help="The roll angle in degrees. Default: 0.0")
 parser.add_argument(
     "--bkgnd_file",
     type=str,
@@ -53,9 +47,7 @@ parser.add_argument(
     action="store_true",
     help="Don't uniformly distribute event positions within pixels.",
 )
-parser.add_argument(
-    "--no_dither", action="store_true", help="Turn dithering off entirely."
-)
+parser.add_argument("--no_dither", action="store_true", help="Turn dithering off entirely.")
 parser.add_argument(
     "--dither_params",
     help="The parameters controlling the size and period of "
@@ -80,12 +72,14 @@ parser.add_argument(
     "--no_diffuse_unresolved",
     action="store_true",
     help="If set, the diffuse component across the entire field of view to represent "
-         "the unresolved flux from sources at very small fluxes will be turned off.",
+    "the unresolved flux from sources at very small fluxes will be turned off.",
 )
 parser.add_argument(
     "--drop_brightest",
-    type=int,
-    help="This many brightest sources will be dropped from the point sources.",
+    help="If an integer, this many brightest sources will be dropped from the point "
+    "sources distribution. If a float, this number is the percent of total flux that"
+    "will be dropped from the point sources distribution. Default: None "
+    "(no sources dropped).",
 )
 parser.add_argument(
     "--random_seed",
@@ -136,8 +130,7 @@ parser.set_defaults(foreground=True, ptsrc_bkgnd=True, instr_bkgnd=True)
 parser.add_argument(
     "--instr_bkgnd_scale",
     type=float,
-    help="A scaling factor for the instrumental background. "
-    "Default: 1.0.",
+    help="A scaling factor for the instrumental background. Default: 1.0.",
 )
 
 args = parser.parse_args()
@@ -158,6 +151,9 @@ if args.instrument not in instrument_registry and os.path.exists(args.instrument
     instrument = add_instrument_to_registry(args.instrument)
 else:
     instrument = args.instrument
+
+if args.drop_brightest is not None and not isinstance(args.drop_brightest, Number):
+    raise TypeError("drop_brightest must be an integer or a float.")
 
 instrument_simulator(
     args.simput_file,
