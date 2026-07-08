@@ -1,6 +1,8 @@
+from contextlib import nullcontext
+
 import numpy as np
 from astropy.io import fits
-from pathlib import PurePath
+from pathlib import Path, PurePath
 
 from soxs.events.utils import _region_filter
 from soxs.utils import parse_value
@@ -83,9 +85,14 @@ def _make_spectrum(
 ):
     from soxs.response import RedistributionMatrixFile
 
+    if isinstance(evtfile, fits.HDUList):
+        ctx = nullcontext(evtfile)
+    else:
+        ctx = fits.open(evtfile)
+
     parameters = {}
-    if isinstance(evtfile, str):
-        with fits.open(evtfile) as f:
+    if isinstance(evtfile, (str, Path, fits.HDUList)):
+        with ctx as f:
             hdu = f["EVENTS"]
             evt_mask = np.ones(hdu.data["ENERGY"].size, dtype="bool")
             if region is not None:
