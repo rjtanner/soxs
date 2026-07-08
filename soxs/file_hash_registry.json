@@ -210,5 +210,7 @@
     "exceed_1.3eV_093025.rmf": "e2e4954fde0866ceaae8003ace2a85dbdced91ebc52642d7da3e56d6586045c1",
     "exceed_2.0eV_093025.rmf": "624942315f088b88a9c56abb0b180738131d833fde9213686e81b20a25605076",
     "exceed_1.3eV_093025_fov_bkg.pi": "47fba5194accd6cfecfe1d9e9dfcd5648f968c56ebb6ddbdc2f5fdbe1268097b",
-    "exceed_2.5eV_093025_fov_bkg.pi": "993c1d925c5a70c995f1200c0e250a5b2ba0db963f6b5aedd1736cc2bf33a500"
+    "exceed_2.5eV_093025_fov_bkg.pi": "993c1d925c5a70c995f1200c0e250a5b2ba0db963f6b5aedd1736cc2bf33a500",
+    "icm_events.h5": "874ce710b12acf55b17983a16bdfdaaed0843ada0bc448bc8cb8d2e512f36927",
+    "cgm_events.h5": "902e8871bc695bc5c82404ff132f06e48dcdce4f0811695a3df3fa1b4dbfa6da"
 }
