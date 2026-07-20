@@ -8,6 +8,7 @@ import warnings
 import astropy.units as u
 import h5py
 import numpy as np
+from astropy.io.ascii import InconsistentTableError
 from astropy.modeling.functional_models import Gaussian1D
 from astropy.table import QTable
 from pathlib import Path, PurePath
@@ -393,7 +394,10 @@ class BaseSpectrum:
             try:
                 t = QTable.read(filename, format="fits")
             except OSError:
-                t = QTable.read(filename, format="ascii.ecsv")
+                try:
+                    t = QTable.read(filename, format="ascii.ecsv")
+                except (InconsistentTableError, UnicodeDecodeError) as e:
+                    raise OSError("Cannot determine spectrum file format!") from e
             ebins = np.append(t["elo"].value, t["ehi"].value[-1])
             flux = t["flux"].value
             binscale = t.meta.get("binscale", t.meta.get("BINSCALE", None))
