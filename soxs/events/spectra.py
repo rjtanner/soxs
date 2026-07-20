@@ -12,8 +12,6 @@ def _write_spectrum(
     bins,
     spec,
     parameters,
-    specfile,
-    overwrite=False,
     noisy=True,
 ):
     exp_time = parameters.get("EXPOSURE", None)
@@ -70,7 +68,7 @@ def _write_spectrum(
 
     hdulist = fits.HDUList([fits.PrimaryHDU(), tbhdu])
 
-    hdulist.writeto(specfile, overwrite=overwrite)
+    return hdulist
 
 
 def _make_spectrum(
@@ -198,7 +196,8 @@ def write_spectrum(
         tmin=tmin,
         tmax=tmax,
     )
-    _write_spectrum(bins, spec, parameters, specfile, overwrite=overwrite)
+    hdulist = _write_spectrum(bins, spec, parameters)
+    hdulist.writeto(specfile, overwrite=overwrite)
 
 
 def plot_spectrum(

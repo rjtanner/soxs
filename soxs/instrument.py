@@ -975,7 +975,7 @@ def _simulate_spectrum(
         FlatResponse,
         RedistributionMatrixFile,
     )
-    from soxs.spectra import ConvolvedSpectrum
+    from soxs.spectra import ConvolvedSpectrum, Spectrum
     from soxs.utils import soxs_cfg
 
     cxb_frac = 1.0 - resolved_cxb_frac
@@ -1037,6 +1037,8 @@ def _simulate_spectrum(
     out_spec = np.zeros(rmf.n_ch)
 
     if spec is not None:
+        if not isinstance(spec, Spectrum):
+            spec = Spectrum.from_file(spec)
         mylog.info("Simulating a source spectrum.")
         cspec = ConvolvedSpectrum.convolve(spec, arf, use_arf_energies=True)
         out_spec += rmf.convolve_spectrum(cspec, exp_time, prng=prng, noisy=noisy)
@@ -1180,14 +1182,14 @@ def simulate_spectrum(
         **kwargs,
     )
 
-    _write_spectrum(
+    hdulist = _write_spectrum(
         bins,
         out_spec,
         event_params,
-        out_file,
-        overwrite=overwrite,
         noisy=noisy,
     )
+
+    hdulist.writeto(out_file, overwrite=overwrite)
 
 
 def simple_event_list(
