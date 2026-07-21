@@ -1077,6 +1077,8 @@ def _simulate_spectrum(
     event_params["EXPOSURE"] = exp_time
     event_params["CHANTYPE"] = rmf.chan_type
 
+    mylog.info("Spectrum generation complete.")
+
     return bins, out_spec, event_params
 
 
