@@ -61,7 +61,7 @@ class InstrumentRegistry:
             else:
                 fns.append(bkgnd)
             logs.append("instrumental background model")
-        if inst_spec["psf"] is not None:
+        if "psf" in inst_spec and inst_spec["psf"] is not None:
             if "image" in inst_spec["psf"][0]:
                 fns.append(inst_spec["psf"][1])
                 logs.append("PSF model")
