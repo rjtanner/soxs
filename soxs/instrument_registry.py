@@ -175,6 +175,29 @@ instrument_registry["athena_wfi"] = {
     "grating": False,
 }
 
+# NewAthena WFI
+
+instrument_registry["newathena_wfi"] = {
+    "name": "newathena_wfi",
+    "arf": "athena_wfi_sixte_13rows_w_filter_LDA_v20260511.arf",
+    "rmf": "athena_wfi_sixte_v20230523.rmf",
+    "bkgnd": ["sixte_wfi_particle_bkg_20230602_nxb8.pha", 79552.92570677],
+    "fov": 40.147153,
+    "num_pixels": 1078,
+    "aimpt_coords": [53.69, -53.69],
+    "chips": [
+        ["Box", -283, -283, 512, 512],
+        ["Box", 283, -283, 512, 512],
+        ["Box", -283, 283, 512, 512],
+        ["Box", 283, 283, 512, 512],
+    ],
+    "focal_length": 12.0,
+    "dither": True,
+    "psf": ["multi_image", "athena_sixte_psf_20260511.fits"],
+    "imaging": True,
+    "grating": False,
+}
+
 # Athena XIFU
 
 instrument_registry["athena_xifu"] = {
