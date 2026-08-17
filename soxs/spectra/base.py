@@ -22,6 +22,7 @@ from soxs.utils import (
     parse_prng,
     parse_value,
     regrid_spectrum,
+    soxs_cfg,
 )
 
 
@@ -619,7 +620,7 @@ class BaseSpectrum:
         self._spec *= np.exp(-f(self.emid.value))
         self._compute_totals()
 
-    def apply_foreground_absorption(self, nH, model="wabs", redshift=0.0, abund_table="angr"):
+    def apply_foreground_absorption(self, nH, model=None, redshift=0.0, abund_table=None):
         """
         Given a hydrogen column density, apply
         galactic foreground absorption to the spectrum.
@@ -632,7 +633,8 @@ class BaseSpectrum:
             The model for absorption to use. Options are "wabs"
             (Wisconsin, Morrison and McCammon; ApJ 270, 119) or
             "tbabs" (Tuebingen-Boulder, Wilms, J., Allen, A., &
-            McCray, R. 2000, ApJ, 542, 914). Default: "wabs".
+            McCray, R. 2000, ApJ, 542, 914).
+            Defaults to the value in the SOXS configuration file.
         redshift : float, optional
             The redshift of the absorbing material. Default: 0.0
         abund_table : str
@@ -652,9 +654,13 @@ class BaseSpectrum:
         """
         nH = parse_value(nH, "1.0e22*cm**-2")
         e = self.emid.value * (1.0 + redshift)
+        if model is None:
+            model = soxs_cfg.get("soxs", "bkgnd_absorb_model")
         if model == "wabs":
             sigma = wabs_cross_section(e)
         elif model == "tbabs":
+            if abund_table is None:
+                abund_table = soxs_cfg.get("soxs", "abund_table")
             if not isinstance(abund_table, str):
                 raise ValueError(
                     "Must supply a string corresponding to one of "
