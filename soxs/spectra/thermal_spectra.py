@@ -846,8 +846,23 @@ class Atable2DGenerator(AtableGenerator):
         lnH = np.atleast_1d(np.log10(nH))
         tidx = np.searchsorted(self.Tvals, lkT) - 1
         didx = np.searchsorted(self.Dvals, lnH) - 1
+# The chosen temperature ("kT") and density ("nH") passed in need to be within the bounds
+# allowed by the data tables in the corresponding FITS files.
+#
+# This is a problem because if the temperature or number density is too high or too low
+# then this will try passing a spectrum with nothing but zeros to the "Spectrum" object
+# for the second argument ("spec").
+# But this will cause the Spectrum object to fail immediatly without any diagnostic reasons
+# for the failure.
+# It will fail when running "_compute_totals", but "spec" only has zeros, so it will
+# try dividing by zero.
+# Needs a way to fail gracefully and let the user know that their chosen temperature and 
+# density are too high or too low.
+
+        # Checks if the temperature is within allowed values
         if tidx >= self.Tvals.size - 1 or tidx < 0:
             return Spectrum(self.ebins, np.zeros(self.nbins), binscale=self.binscale)
+        # Checks if hydrogen number density is within allowed values
         if didx >= self.Dvals.size - 1 or didx < 0:
             return Spectrum(self.ebins, np.zeros(self.nbins), binscale=self.binscale)
         eidxs, ne, ebins, emid, de = self._get_energies(redshift)
@@ -1247,4 +1262,4 @@ def download_spectrum_tables(model, model_vers=None, loc=None):
         for fn in fns:
             dog.fetch(fn)
     except ValueError as e:
-        raise ValueError(f"Invalid model specification '{model}'.") from e
+        raise ValueError(f"Invalid model or version specification '{model}', version {model_vers}.") from e
