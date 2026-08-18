@@ -123,6 +123,10 @@ class BaseSpectrum:
         self._fmid = 0.5 * (self._fbins[1:] + self._fbins[:-1])
         self._df = np.diff(self._fbins)
 
+    @property
+    def units(self):
+        return self._units
+
     _wvbins = None
 
     @property
